@@ -32,6 +32,7 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
 
     //Variables diego
     private final static int NOTIFICATION_ID=0;
+    private final static String CHANNEL_ID = "NOTIFICACION";
     SensorManager sensorManagerP;
     Sensor sensor_proximidad;
     int contador=0;
@@ -161,7 +162,7 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
             if(prox_distancia<1){
                 //str_proximidad="CERCA";
                 createNotificationChannel();
-       //         crearNotificacion();
+                crearNotificacion();
 
             }else{
                 //str_proximidad="LEJOS";
@@ -207,18 +208,19 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
-    /*
+
     private void crearNotificacion(){
-        NotificationCompat.Builder builder= new NotificationCompat.Builder(getApplicationContext(), "NOTIFICACION");
+        NotificationCompat.Builder builder= new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        //builder.setSmallIcon(R.drawable.ic_warning);
+        builder.setSmallIcon(R.drawable.ic_baseline_warning_24);
         builder.setContentTitle("APP PROYECTO DANP");
-        //builder.setContentText("El dispositivo esta boca abajo");
-        //builder.setColor(Color.CYAN);
-        //builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        //builder.setDefaults(Notification.DEFAULT_SOUND);
+        builder.setContentText("El dispositivo esta boca abajo");
+        builder.setColor(Color.CYAN);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setDefaults(Notification.DEFAULT_SOUND);
+
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
         notificationManagerCompat.notify(NOTIFICATION_ID,builder.build());
 
-    }*/
+    }
 }
