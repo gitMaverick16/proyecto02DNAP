@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioButton;
 
+import com.example.proyecto02.MqttService.MainActivityListener;
 
-public class MainActivity extends AppCompatActivity{
+
+public class MainActivity extends AppCompatActivity implements MainActivityListener {
 
     RadioButton r1, r2, r3, r4, r5, r6;
     String opcion;
@@ -47,6 +49,11 @@ public class MainActivity extends AppCompatActivity{
         Intent siguiente = new Intent(this, Medicion.class);
         siguiente.putExtra("opcionKey",opcion);
         startActivity(siguiente);
+    }
+
+    @Override
+    public void display(String data) {
+
     }
 
 
