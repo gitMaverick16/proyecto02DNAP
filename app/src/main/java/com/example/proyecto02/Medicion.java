@@ -8,17 +8,24 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.widget.Toast;
+
+import com.example.proyecto02.MqttService.MqttHelperService;
+import com.example.proyecto02.MqttService.MqttIntentService;
+import com.example.proyecto02.MqttService.ToolHelper;
 
 public class Medicion extends AppCompatActivity implements SensorEventListener{
 
@@ -38,10 +45,12 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
     double prox_distancia=0, luz=0;
     TextView proximidad, distancia;
     String str_proximidad="LEJOS";
+    private final static String CHANNEL_ID = "NOTIFICACION";
 
     private SensorEventListener proximityEventListener;
     //fin variables Diego
 
+    float valorIluminacion=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +72,14 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
         //fin de instancia de sensores diego
 
 
+        //initMqttService(MqttIntentService.ACTION_START);
+
+
         lightEventListener=new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 float value = sensorEvent.values[0];
+                valorIluminacion=value;
                 texto.setText("");
                 texto.append("\n" + "Luminosidad: " + value+"\n"+opcionSeleccionada);
                 if(opcionSeleccionada.equals("1")){
@@ -136,6 +149,7 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
                         texto.append("\n" + "Luminosidad: " + value+"\n"+"Estas con mucha iluminacion");
                     }
                 }
+                //publicar();
             }
 
             @Override
@@ -161,7 +175,7 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
             if(prox_distancia<1){
                 //str_proximidad="CERCA";
                 createNotificationChannel();
-       //         crearNotificacion();
+                crearNotificacion();
 
             }else{
                 //str_proximidad="LEJOS";
@@ -207,18 +221,53 @@ public class Medicion extends AppCompatActivity implements SensorEventListener{
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
-    /*
+
     private void crearNotificacion(){
-        NotificationCompat.Builder builder= new NotificationCompat.Builder(getApplicationContext(), "NOTIFICACION");
+        NotificationCompat.Builder builder= new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        //builder.setSmallIcon(R.drawable.ic_warning);
+        builder.setSmallIcon(R.drawable.ic_baseline_warning_24);
         builder.setContentTitle("APP PROYECTO DANP");
-        //builder.setContentText("El dispositivo esta boca abajo");
-        //builder.setColor(Color.CYAN);
-        //builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        //builder.setDefaults(Notification.DEFAULT_SOUND);
+        builder.setContentText("El dispositivo esta boca abajo");
+        builder.setColor(Color.CYAN);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setDefaults(Notification.DEFAULT_SOUND);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
         notificationManagerCompat.notify(NOTIFICATION_ID,builder.build());
 
-    }*/
+    }
+    private void initMqttService(String action) {
+        String topic = "v1/devices/me/telemetry";
+        int qos = 0;
+        int delay = 0;
+        int size = (int)valorIluminacion;
+
+        Intent intent = new Intent(Medicion.this, MqttHelperService.class);
+        intent.putExtra(MqttIntentService.TOPIC, topic);
+        intent.putExtra(MqttIntentService.QOS, qos);
+        intent.putExtra(MqttIntentService.DELAY, delay);
+        intent.putExtra(MqttIntentService.DATA, size);
+        intent.setAction(action);
+        startService(intent);
+        /*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }*/
+    }
+
+    public void publicar(){
+        try {
+
+            initMqttService(MqttIntentService.ACTION_PUBLISH);
+            String datetime2 = ToolHelper.getDateTime();
+            ToolHelper.setPublishBegin(getApplicationContext(), datetime2);
+            //txtAction.setText("Published at: " + datetime2);
+            //display("Message sent: "+edtNumMessage.getText());
+
+            //Toast.makeText(getApplicationContext(),"Se publico un mensaje", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

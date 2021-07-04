@@ -10,23 +10,23 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="El valor de la luz en lux es:"
+        android:layout_marginTop="16dp"
 
-        app:layout_constraintBottom_toTopOf="@+id/texto"
+        android:text="El valor de la luz en lux es:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.33" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/texto"
         android:layout_width="212dp"
         android:layout_height="307dp"
-        android:layout_marginBottom="252dp"
+        android:layout_marginTop="16dp"
         android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
